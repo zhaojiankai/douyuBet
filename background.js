@@ -613,7 +613,8 @@ $(function() {
                  isDoGuess = function(e){
                     //只吃低保
                     if( !betSetting.is_guessed && e.guess_notify[0].gameunit_list[1].bet_odds == 0.1){
-                      if(e.guess_notify[0].gameunit_list[1].bet_max_amount < t.banlance/2){
+                      //剩余金额占比小于10%
+                      if(e.guess_notify[0].gameunit_list[1].bet_max_amount/e.guess_notify[0].gameunit_list[1].total_amount < 0.1){
                         doGuess(e);
                       }
                     }
@@ -624,14 +625,14 @@ $(function() {
                                 content: JSON.stringify({
                                     uid: t.uid,
                                     gameunit_id: e.guess_notify[0].gameunit_list[1].gameunit_id,
-                                    bet_amount: Number(t.banlance/10).toFinxed(0),
+                                    bet_amount: Number(t.balance/10).toFixed(0),
                                     bet_odds: Number(e.guess_notify[0].gameunit_list[1].bet_odds).toFixed(1)
                                 })
                             };
                   r.emit("guess", content);
                   betSetting.is_guessed = true;
-                  t.banlance -= content.bet_amount;
-                console.log("doGuess",content)
+                  t.banlance -= Number(content.content.bet_amount);
+                  console.log("doGuess",content)
               },
                 r.on("bet_resp", function(e) {
                     console.log("bet_resp",new Date(),e);
