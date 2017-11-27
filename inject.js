@@ -1,9 +1,18 @@
-var betSetting = {
-  roomid:74960,
-  //roomid:58428,
-  tokenUrl:"",
-  is_guessed:false
-};
+
+!function(){
+  if(localStorage.betSetting == undefined){
+    localStorage.betSetting = JSON.stringify({
+      roomid:74960,
+      tokenUrl:"",
+      lastGameId:""
+    });
+  }
+}();
+var betSetting = JSON.parse(localStorage.betSetting);
+
+var saveBetSetting = function(){
+  localStorage.betSetting = JSON.stringify(betSetting);
+}
 
 $.ajax({
         type: "GET",
