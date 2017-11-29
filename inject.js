@@ -5,6 +5,7 @@
       roomid:74960,
       tokenUrl:"",
       minOdds:5,
+      oppoMaxOdds:1,
       guessPercent:10,
       guessUnit:1
     });

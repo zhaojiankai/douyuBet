@@ -611,10 +611,13 @@ $(function() {
                 }),
 
                  isDoGuess = function(e){
-                   //console.log("isDoGuess",e);
+                   //console.log("isDoGuess",e,);
                    if(t.balance == 0){return};
                    for(var i = 0;i < e.guess_notify.length;i++){
                      var guess_notify = e.guess_notify[i];
+                     //console.log("guess_odds",guess_notify.gameunit_list[betSetting.guessUnit].bet_odds,guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds);
+
+                     if(guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds <= betSetting.oppoMaxOdds){continue};
                      //只吃低保
                      if((guessLog[guess_notify.game_id] == undefined
                       ||  guessLog[guess_notify.game_id].is_guessed == undefined
@@ -630,10 +633,14 @@ $(function() {
                 },
 
                  doGuess = function(guess_notify){
-                  
                    var guessUnit = guess_notify.gameunit_list[betSetting.guessUnit];
                    var max = guessUnit.bet_max_amount;
-                   var guessMax = t.balance/betSetting.guessPercent;
+                   var guessMax;
+                   if(guessLog[guess_notify.game_id] == undefined){
+                      guessMax = t.balance/betSetting.guessPercent;
+                   }else{
+                      guessMax = guessLog[guess_notify.game_id];
+                   }
                   var content = {
                                 content: JSON.stringify({
                                     uid: t.uid,
@@ -644,25 +651,36 @@ $(function() {
                             };
                   r.emit("guess", content);
                   guessLog.lastGameId = guess_notify.game_id;
+                  guessLog.lastGuessAmount = Number(content.content.bet_amount);
                   guessLog[guessLog.lastGameId] = {};
-                  guessLog[guessLog.lastGameId].is_guessed = true;
+                  //guessLog[guessLog.lastGameId].is_guessed = true;
+                  guessLog[guessLog.lastGameId].guessMax = Number(guessMax.toFixed(0));
+                  guessLog[guessLog.lastGameId].guessedAmount += Number(content.content.bet_amount);
+                  if(guessMax > max){
+                    guessLog[guessLog.lastGameId].is_guessed = false;
+                  }else{
+                    guessLog[guessLog.lastGameId].is_guessed = true;
+                  }
                   saveLog();
                   t.banlance -= Number(content.content.bet_amount);
                   console.log("doGuess",content)
               },
                 r.on("bet_resp", function(e) {
                     console.log("bet_resp",new Date(),e);
-                    //可能会失败
-                    if(e.data.ret_msg != "OK"){
-                      guessLog[guessLog.lastGameId] = {};
-                      guessLog[guessLog.lastGameId].is_guessed = false;
-                      saveLog();
-                    }
+
                     e.data && 0 != e.data.ret_code ? a(e.data.ret_msg) : e.data && 0 == e.data.ret_code && (t.balance = parseInt(e.data.balance, 10),
                     isNaN(t.balance) || $("#balance").text(t.balance > 1e4 ? (t.balance / 1e4).toFixed(2) + "万" : t.balance + "个"))
                 }),
                 r.on("guess_resp", function(e) {
                     console.log("guess_resp",new Date(),e);
+                    //可能会失败
+                    if(e.data.ret_msg != "OK"){
+                      console.log("ret_msg",e);
+                      //guessLog[guessLog.lastGameId] = {};
+                      guessLog[guessLog.lastGameId].is_guessed = false;
+                      guessLog[guessLog.lastGameId].guessedAmount -= guessLog.lastGuessAmount;
+                      saveLog();
+                    }
                     e.data && 0 != e.data.ret_code ? a(e.data.ret_msg) : e.data && 0 == e.data.ret_code && (t.balance = parseInt(e.data.balance, 10),
                     isNaN(t.balance) || $("#balance").text(t.balance > 1e4 ? (t.balance / 1e4).toFixed(2) + "万" : t.balance + "个"))
                 })
