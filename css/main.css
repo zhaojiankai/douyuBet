@@ -1,0 +1,50 @@
+body {
+  width: 300px;
+  height: 60px;
+  overflow-x: hidden;
+}
+
+.container {
+  padding: 3px;
+}
+
+.table {
+  margin-bottom: 5px;
+}
+
+.switch {
+  float: right;
+}
+
+.btn {
+  padding: 3px;
+}
+
+td {
+  border-bottom: 1px solid #ddd;
+}
+
+.bl-row {
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.btn-del, .btn-add {
+  float: right;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+#field {
+  margin-bottom: 5px;
+}
+
+.edit:hover {
+  cursor: pointer;
+  color: #a92229;
+  text-decoration: none;
+}
+
+a {
+  color: #000;
+}

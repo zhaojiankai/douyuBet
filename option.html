@@ -1,0 +1,47 @@
+<!doctype html>
+<html ng-app="popup">
+  <head>
+    <title>Getting Started Extension's Popup</title>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+  </head>
+  <body ng-controller="mainController">
+    <form class="container" ng-submit="saveSettings()">
+      <table class="table table-hover">
+        <tbody>
+          <tr>
+            <td><span class="mode_lite_name"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> 房间 ID:</span></td>
+            <td><span class="mode_lite_desc"><span class="switch"><input type="number" ng-model="roomid"></span></span></td>
+          </tr>
+          <tr>
+            <td><span class="mode_lite_name"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> 竞猜最小赔率:</span></td>
+            <td><span class="mode_lite_desc"><span class="switch"><input type="number" ng-model="minOdds"></span></span></td>
+          </tr>
+          <tr>
+            <td><span class="mode_lite_name"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> 单个竞猜下注比例(%):</span></td>
+            <td><span class="mode_lite_desc"><span class="switch"><input type="number" ng-model="guessPercent"></span></span></td>
+          </tr>
+          <tr>
+            <td><span class="mode_lite_name"><span class="glyphicon glyphicon-certificate" aria-hidden="true"></span> 竞猜左右:</span></td>
+            <td><span class="mode_lite_desc">
+              <span class="switch">
+                <select ng-model="guessUnit">
+                  <option value="0">左
+                  <option value="1">右
+                </select>
+              </span>
+            </span>
+          </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div align="center">
+      <button class="btn btn-danger" type="submit" value="Save"/><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save</button>
+      </div>
+    </form>
+    <script src="lib/angular.min.js"></script>
+    <!--<script src="lib/bootstrap/dist/js/bootstrap.js"></script>-->
+    <script src="option.js"></script>
+  </body>
+</html>

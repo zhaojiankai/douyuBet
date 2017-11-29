@@ -4,14 +4,21 @@
     localStorage.betSetting = JSON.stringify({
       roomid:74960,
       tokenUrl:"",
-      lastGameId:""
+      minOdds:5,
+      guessPercent:10,
+      guessUnit:1
     });
   }
+  if(localStorage.guessLog == undefined){
+    localStorage.guessLog = JSON.stringify({lastGameId:""});
+  }
 }();
+
+var guessLog = JSON.parse(localStorage.guessLog);
 var betSetting = JSON.parse(localStorage.betSetting);
 
-var saveBetSetting = function(){
-  localStorage.betSetting = JSON.stringify(betSetting);
+var saveLog = function(){
+  localStorage.guessLog = JSON.stringify(guessLog);
 }
 
 $.ajax({
