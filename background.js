@@ -615,18 +615,27 @@ $(function() {
                    if(t.balance == 0){return};
                    for(var i = 0;i < e.guess_notify.length;i++){
                      var guess_notify = e.guess_notify[i];
-                     //console.log("guess_odds",guess_notify.gameunit_list[betSetting.guessUnit].bet_odds,guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds);
+                     console.log("guess_odds",guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds,guess_notify.gameunit_list[betSetting.guessUnit].bet_odds);
 
-                     if(guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds <= betSetting.oppoMaxOdds){continue};
-                     //只吃低保
+                     if(guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds < betSetting.oppoMaxOdds){continue};
+                     //风险型
                      if((guessLog[guess_notify.game_id] == undefined
                       ||  guessLog[guess_notify.game_id].is_guessed == undefined
                       || !guessLog[guess_notify.game_id].is_guessed)
-                       && guess_notify.gameunit_list[betSetting.guessUnit].bet_odds >= betSetting.minOdds){
+                       && guess_notify.gameunit_list[betSetting.guessUnit].bet_odds >= betSetting.minOdds
+                     && guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds >= betSetting.oppoMaxOdds){
                        //剩余金额占比小于10%
                        //if(guess_notify.gameunit_list[1].bet_max_amount/guess_notify.gameunit_list[1].total_amount < 0.1){
                          doGuess(guess_notify);
                        //}
+                     }
+                     //稳健性
+                     if((guessLog[guess_notify.game_id] == undefined
+                      ||  guessLog[guess_notify.game_id].is_guessed == undefined
+                      || !guessLog[guess_notify.game_id].is_guessed)
+                      &&guess_notify.gameunit_list[betSetting.guessUnit].bet_odds <= 0.5
+                      && guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds >=5){
+                       doGuess(guess_notify);
                      }
                    }
 
