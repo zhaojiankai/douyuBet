@@ -6,6 +6,8 @@
       tokenUrl:"",
       minOdds:5,
       oppoMaxOdds:1,
+      robustMinOdds:0.5,
+      robustOppoMaxOdds:5,
       guessPercent:10,
       guessUnit:1
     });

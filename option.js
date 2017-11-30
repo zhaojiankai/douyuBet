@@ -3,19 +3,18 @@ var popup = angular.module('popup', []);
 popup.controller('mainController', function ($scope) {
 
   // init settings
+  var params = ["roomid","minOdds","oppoMaxOdds","robustMinOdds","robustOppoMaxOdds","guessPercent","guessUnit"];
   var betSetting = JSON.parse(localStorage.betSetting);
-  $scope.roomid = betSetting.roomid;
-  $scope.minOdds = betSetting.minOdds;
-  $scope.oppoMaxOdds = betSetting.oppoMaxOdds;
-  $scope.guessPercent = betSetting.guessPercent;
-  $scope.guessUnit = betSetting.guessUnit;
+  for(var i = 0;i < params.length;i++){
+    $scope[params[i]] = betSetting[params[i]];
+
+  }
 
   // save settings to local storage
   $scope.saveSettings = function() {
-    betSetting.roomid = $scope.roomid;
-    betSetting.minOdds = $scope.minOdds;
-    betSetting.oppoMaxOdds = $scope.oppoMaxOdds;
-    betSetting.guessPercent = $scope.guessPercent;
+    for(var i = 0;i < params.length;i++){
+      betSetting[params[i]] = $scope[params[i]];
+    }
     betSetting.guessUnit = Number($scope.guessUnit);
     localStorage.betSetting = JSON.stringify(betSetting);
     window.close();

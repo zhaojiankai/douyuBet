@@ -617,7 +617,8 @@ $(function() {
                      var guess_notify = e.guess_notify[i];
                      console.log("guess_odds",guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds,guess_notify.gameunit_list[betSetting.guessUnit].bet_odds);
 
-                     if(guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds < betSetting.oppoMaxOdds){continue};
+                     if(guess_notify.gameunit_list[betSetting.guessUnit].bet_odds == 0){continue};
+
                      //风险型
                      if((guessLog[guess_notify.game_id] == undefined
                       ||  guessLog[guess_notify.game_id].is_guessed == undefined
@@ -633,7 +634,7 @@ $(function() {
                      if((guessLog[guess_notify.game_id] == undefined
                       ||  guessLog[guess_notify.game_id].is_guessed == undefined
                       || !guessLog[guess_notify.game_id].is_guessed)
-                      &&guess_notify.gameunit_list[betSetting.guessUnit].bet_odds <= 0.5
+                      && guess_notify.gameunit_list[betSetting.guessUnit].bet_odds <= 0.5
                       && guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds >=5){
                        doGuess(guess_notify);
                      }
@@ -648,7 +649,7 @@ $(function() {
                    if(guessLog[guess_notify.game_id] == undefined){
                       guessMax = t.balance/betSetting.guessPercent;
                    }else{
-                      guessMax = guessLog[guess_notify.game_id];
+                      guessMax = guessLog[guess_notify.game_id].guessMax;
                    }
                   var content = {
                                 content: JSON.stringify({
