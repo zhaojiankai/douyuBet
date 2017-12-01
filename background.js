@@ -589,7 +589,6 @@ $(function() {
                 }),
                 r.on("join_resp", function(t) {
                   console.log("join_resp",new Date(),t);
-                  guessLog.joinTime = new Date();
                     t.data && 0 === t.data.length ? d() : t.data && t.data.length > 0 && (o = t.data,
                     c())
                 }),
@@ -616,6 +615,10 @@ $(function() {
                    if(t.balance == 0){return};
                    for(var i = 0;i < e.guess_notify.length;i++){
                      var guess_notify = e.guess_notify[i];
+                     if(guessLog[guess_notify.game_id] == undefined){
+                       guessLog[guess_notify.game_id] = {};
+                       guessLog[guess_notify.game_id].startTime = new Date().getTime();
+                     }
                      console.log(guess_notify.game_name,guess_notify.bettitle0,guess_notify.bettitle1);
 
                      if(guess_notify.gameunit_list[betSetting.guessUnit].bet_odds == 0){continue};
@@ -633,7 +636,7 @@ $(function() {
                      }
                      //稳健性
                      //开始几分钟内，不低保
-                     if(new Date().getTime() - guessLog.joinTime.getTime() < betSetting.noRobustMinute*60*1000){continue};
+                     if(new Date().getTime() - guessLog[guess_notify.game_id].startTime < betSetting.noRobustMinute*60*1000){continue};
                      if((guessLog[guess_notify.game_id] == undefined
                       ||  guessLog[guess_notify.game_id].is_guessed == undefined
                       || !guessLog[guess_notify.game_id].is_guessed)
@@ -665,7 +668,7 @@ $(function() {
                   r.emit("guess", content);
                   guessLog.lastGameId = guess_notify.game_id;
                   guessLog.lastGuessAmount = Number(content.content.bet_amount);
-                  guessLog[guessLog.lastGameId] = {};
+                  //guessLog[guessLog.lastGameId] = {};
                   //guessLog[guessLog.lastGameId].is_guessed = true;
                   guessLog[guessLog.lastGameId].guessMax = Number(guessMax.toFixed(0));
                   guessLog[guessLog.lastGameId].guessedAmount = guessLog[guessLog.lastGameId].guessedAmount||0 + Number(content.content.bet_amount);
