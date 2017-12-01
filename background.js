@@ -652,7 +652,7 @@ $(function() {
                    var guessUnit = guess_notify.gameunit_list[betSetting.guessUnit];
                    var max = guessUnit.bet_max_amount;
                    var guessMax;
-                   if(guessLog[guess_notify.game_id] == undefined){
+                   if(guessLog[guess_notify.game_id].guessMax == undefined){
                       guessMax = t.balance/betSetting.guessPercent;
                    }else{
                       guessMax = guessLog[guess_notify.game_id].guessMax;
