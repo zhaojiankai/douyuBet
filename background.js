@@ -654,14 +654,14 @@ $(function() {
                  doGuess = function(guess_notify){
                    var guessUnit = guess_notify.gameunit_list[betSetting.guessUnit];
                    var thisGuessMax = guessUnit.bet_max_amount;
-                   var guessedAmout = guessLog[guess_notify.game_id].guessedAmount;
+                   var guessedAmout = guessLog[guess_notify.game_id].guessedAmount || 0;
                    var guessMax;
                    if(guessLog[guess_notify.game_id].guessMax == undefined){
                       guessMax = t.balance/betSetting.guessPercent;
                    }else{
                       guessMax = guessLog[guess_notify.game_id].guessMax;
                    }
-                   var thisGuess = guessMax > thisGuessMax + guessedAmout? thisGuessMax :thisGuessMax + guessedAmout - guessMax;
+                   var thisGuess = guessMax > thisGuessMax + guessedAmout? thisGuessMax :guessMax - guessedAmout;
                   var content = {
                                 content: JSON.stringify({
                                     uid: t.uid,
