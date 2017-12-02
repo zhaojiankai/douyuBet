@@ -643,6 +643,7 @@ $(function() {
                       || !guessLog[guess_notify.game_id].is_guessed)
                       && guess_notify.gameunit_list[betSetting.guessUnit].bet_odds <= betSetting.robustMinOdds
                       && guess_notify.gameunit_list[Number(!betSetting.guessUnit)].bet_odds >=betSetting.robustOppoMaxOdds){
+                        console.log("稳健 now:",new Date(),"start:",new Date(guessLog[guess_notify.game_id].startTime));
                        doGuess(guess_notify);
                      }
                    }
