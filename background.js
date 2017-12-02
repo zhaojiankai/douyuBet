@@ -619,6 +619,7 @@ $(function() {
                      if(guessLog[guess_notify.game_id] == undefined){
                        guessLog[guess_notify.game_id] = {};
                        guessLog[guess_notify.game_id].startTime = new Date().getTime();
+                       console.log("start:",new Date());
                      }
                      //console.log(guess_notify.game_name,guess_notify.bettitle0,guess_notify.bettitle1);
 
