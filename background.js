@@ -660,29 +660,30 @@ $(function() {
                    }else{
                       guessMax = guessLog[guess_notify.game_id].guessMax;
                    }
+                   var thisGuess = guessMax > max ? max :guessMax;
                   var content = {
                                 content: JSON.stringify({
                                     uid: t.uid,
                                     gameunit_id: guessUnit.gameunit_id,
-                                    bet_amount: guessMax > max ? max.toFixed(0) :guessMax.toFixed(0),
+                                    bet_amount: thisGuess.toFixed(0),
                                     bet_odds: Number(guessUnit.bet_odds).toFixed(1)
                                 })
                             };
                   r.emit("guess", content);
                   guessLog.waitResp = true;
                   guessLog.lastGameId = guess_notify.game_id;
-                  guessLog.lastGuessAmount = Number(content.content.bet_amount);
+                  guessLog.lastGuessAmount = thisGuess;
                   //guessLog[guessLog.lastGameId] = {};
                   //guessLog[guessLog.lastGameId].is_guessed = true;
                   guessLog[guessLog.lastGameId].guessMax = Number(guessMax.toFixed(0));
-                  guessLog[guessLog.lastGameId].guessedAmount = (guessLog[guessLog.lastGameId].guessedAmount||0) + Number(content.content.bet_amount);
-                  if(guessLog[guessLog.lastGameId].guessedAmount > max){
-                    guessLog[guessLog.lastGameId].is_guessed = false;
-                  }else{
+                  guessLog[guessLog.lastGameId].guessedAmount = (guessLog[guessLog.lastGameId].guessedAmount||0) + thisGuess;
+                  if(guessLog[guessLog.lastGameId].guessedAmount >= guessLog[guessLog.lastGameId].guessMax){
                     guessLog[guessLog.lastGameId].is_guessed = true;
+                  }else{
+                    guessLog[guessLog.lastGameId].is_guessed = false;
                   }
                   saveLog();
-                  t.banlance -= Number(content.content.bet_amount);
+                  t.banlance -= thisGuess;
                   console.log("doGuess",content)
               },
                 r.on("bet_resp", function(e) {
@@ -700,8 +701,8 @@ $(function() {
                       //guessLog[guessLog.lastGameId] = {};
                       guessLog[guessLog.lastGameId].is_guessed = false;
                       guessLog[guessLog.lastGameId].guessedAmount -= guessLog.lastGuessAmount;
-                      saveLog();
                     }
+                    saveLog();
                     e.data && 0 != e.data.ret_code ? a(e.data.ret_msg) : e.data && 0 == e.data.ret_code && (t.balance = parseInt(e.data.balance, 10),
                     isNaN(t.balance) || $("#balance").text(t.balance > 1e4 ? (t.balance / 1e4).toFixed(2) + "万" : t.balance + "个"))
                 })
