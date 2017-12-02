@@ -653,14 +653,15 @@ $(function() {
 
                  doGuess = function(guess_notify){
                    var guessUnit = guess_notify.gameunit_list[betSetting.guessUnit];
-                   var max = guessUnit.bet_max_amount;
+                   var thisGuessMax = guessUnit.bet_max_amount;
+                   var guessedAmout = guessLog[guess_notify.game_id].guessedAmount;
                    var guessMax;
                    if(guessLog[guess_notify.game_id].guessMax == undefined){
                       guessMax = t.balance/betSetting.guessPercent;
                    }else{
                       guessMax = guessLog[guess_notify.game_id].guessMax;
                    }
-                   var thisGuess = guessMax > max ? max :guessMax;
+                   var thisGuess = guessMax > thisGuessMax + guessedAmout? thisGuessMax :thisGuessMax + guessedAmout - guessMax;
                   var content = {
                                 content: JSON.stringify({
                                     uid: t.uid,
@@ -677,7 +678,7 @@ $(function() {
                   //guessLog[guessLog.lastGameId].is_guessed = true;
                   guessLog[guessLog.lastGameId].guessMax = Number(guessMax.toFixed(0));
                   guessLog[guessLog.lastGameId].guessedAmount = (guessLog[guessLog.lastGameId].guessedAmount||0) + thisGuess;
-                  if(guessLog[guessLog.lastGameId].guessedAmount >= guessLog[guessLog.lastGameId].guessMax){
+                  if(Math.abs(guessLog[guessLog.lastGameId].guessedAmount - guessLog[guessLog.lastGameId].guessMax) <= 2){
                     guessLog[guessLog.lastGameId].is_guessed = true;
                   }else{
                     guessLog[guessLog.lastGameId].is_guessed = false;
