@@ -613,13 +613,14 @@ $(function() {
                  isDoGuess = function(e){
                    //console.log("isDoGuess",e,);
                    if(t.balance == 0){return};
+                   if(guessLog.waitResp){return};
                    for(var i = 0;i < e.guess_notify.length;i++){
                      var guess_notify = e.guess_notify[i];
                      if(guessLog[guess_notify.game_id] == undefined){
                        guessLog[guess_notify.game_id] = {};
                        guessLog[guess_notify.game_id].startTime = new Date().getTime();
                      }
-                     console.log(guess_notify.game_name,guess_notify.bettitle0,guess_notify.bettitle1);
+                     //console.log(guess_notify.game_name,guess_notify.bettitle0,guess_notify.bettitle1);
 
                      if(guess_notify.gameunit_list[betSetting.guessUnit].bet_odds == 0){continue};
 
@@ -666,13 +667,14 @@ $(function() {
                                 })
                             };
                   r.emit("guess", content);
+                  guessLog.waitResp = true;
                   guessLog.lastGameId = guess_notify.game_id;
                   guessLog.lastGuessAmount = Number(content.content.bet_amount);
                   //guessLog[guessLog.lastGameId] = {};
                   //guessLog[guessLog.lastGameId].is_guessed = true;
                   guessLog[guessLog.lastGameId].guessMax = Number(guessMax.toFixed(0));
-                  guessLog[guessLog.lastGameId].guessedAmount = guessLog[guessLog.lastGameId].guessedAmount||0 + Number(content.content.bet_amount);
-                  if(guessMax > max){
+                  guessLog[guessLog.lastGameId].guessedAmount = (guessLog[guessLog.lastGameId].guessedAmount||0) + Number(content.content.bet_amount);
+                  if(guessLog[guessLog.lastGameId].guessedAmount > max){
                     guessLog[guessLog.lastGameId].is_guessed = false;
                   }else{
                     guessLog[guessLog.lastGameId].is_guessed = true;
@@ -688,6 +690,7 @@ $(function() {
                     isNaN(t.balance) || $("#balance").text(t.balance > 1e4 ? (t.balance / 1e4).toFixed(2) + "万" : t.balance + "个"))
                 }),
                 r.on("guess_resp", function(e) {
+                    guessLog.waitResp = false;
                     console.log("guess_resp",new Date(),e);
                     //可能会失败
                     if(e.data.ret_msg != "OK"){
