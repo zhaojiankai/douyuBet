@@ -181,7 +181,7 @@ $(function() {
                         n.winname = i.length ? i[0].gameunit_name : "",
                         n.winamount = void 0 == n.anchor_win ? 0 : n.anchor_win,
                         cacheWinamount = window.localStorage.getItem("winamount-" + n.game_id + "-" + t.uid),
-                        console.log("cacheWinamount", cacheWinamount),
+                        //console.log("cacheWinamount", cacheWinamount),
                         0 != n.winamount ? window.localStorage.setItem("winamount-" + n.game_id + "-" + t.uid, n.winamount) : n.winamount = null != cacheWinamount && void 0 != cacheWinamount ? cacheWinamount : 0
                     } else {
                         if (e = !1,
@@ -384,7 +384,7 @@ $(function() {
                         e.winname = a.length ? a[0].gameunit_name : "",
                         e.winamount = void 0 == e.winamount ? 0 : e.winamount,
                         cacheWinamount = window.localStorage.getItem("winamount-" + e.game_id + "-" + t.uid),
-                        console.log("cacheWinamount", cacheWinamount),
+                        //console.log("cacheWinamount", cacheWinamount),
                         0 != e.winamount ? window.localStorage.setItem("winamount-" + e.game_id + "-" + t.uid, e.winamount) : e.winamount = null != cacheWinamount && void 0 != cacheWinamount ? cacheWinamount : 0
                     } else {
                         if (null == e.gameunit_list[0].bet_odds || 0 == e.gameunit_list[0].bet_odds ? e.bettitle0 = "等待开猜" : e.bettitle0 = "赔率 1:" + e.gameunit_list[0].bet_odds,
@@ -602,23 +602,53 @@ $(function() {
                     n(r, t.uid, function(e) {
                         t = e,
                         console.log("userInfo", t)
-                    })) : e.guess_notify ? (//console.log("guess_notify", e.guess_notify),
+                    })) : e.guess_notify ? (print(e,"guess_notify"),//console.log("guess_notify", e.guess_notify),
                     o = e.guess_notify,
-                    "" == s && c(),isDoGuess(e)) : e.bet_notify && (//console.log("bet_notify", e.bet_notify),
+                    "" == s && c(),isDoGuess(e)) : e.bet_notify && (//print(e,"bet_notify"),//console.log("bet_notify", e.bet_notify),
                     o = e.bet_notify,
                     "" == s && c())//,
                     //console.log("message",new Date(),e)
                 }),
+        				lastData = undefined;
+        				print = function(e,type){
+        					return;
+        					console.count();
+        					for(var i in e[type]){
+        						var notify = e[type][i];
+        						console.log((type == "guess_notify"?"guess  ":"  bet  ")  +
+        						'%c'+zfill(notify.gameunit_list[0].bet_odds.toFixed(1),3) +
+        						'%c'+zfill(notify.gameunit_list[1].bet_odds.toFixed(1),5) +
+        						"竞猜金额:"+
+        						'%c'+zfill(notify.gameunit_list[0].bet_max_amount,8) +
+        						'%c'+zfill(notify.gameunit_list[1].bet_max_amount,8) +
+        						"  " +
+        						notify.game_name,
+        						(lastData||e[type])[i].gameunit_list[0].bet_odds == notify.gameunit_list[0].bet_odds?"":"color:red",
+        						(lastData||e[type])[i].gameunit_list[1].bet_odds == notify.gameunit_list[1].bet_odds?"":"color:red",
+        						(lastData||e[type])[i].gameunit_list[0].bet_max_amount == notify.gameunit_list[0].bet_max_amount?"":"color:red",
+        						(lastData||e[type])[i].gameunit_list[1].bet_max_amount == notify.gameunit_list[1].bet_max_amount?"":"color:red",
+        						);
+        					}
+
+        					console.log("----------");
+        					lastData = e[type];
+        				}
+        				zfill = function(num, size) {
+        					var s = "        " + num;
+        					return s.substr(s.length-size);
+        				}
 
                  isDoGuess = function(e){
                    //console.log("isDoGuess",e,);
+                   return;
                    if(t.balance == 0){return};
-                   if(guessLog.waitResp){return};
+                   if(guessLog.waitResp){console.log("wait Resp");return};
                    for(var i = 0;i < e.guess_notify.length;i++){
                      var guess_notify = e.guess_notify[i];
                      if(guessLog[guess_notify.game_id] == undefined){
                        guessLog[guess_notify.game_id] = {};
                        guessLog[guess_notify.game_id].startTime = new Date().getTime();
+					                  saveLog();
                        console.log("start:",new Date());
                      }
                      //console.log(guess_notify.game_name,guess_notify.bettitle0,guess_notify.bettitle1);
@@ -671,7 +701,6 @@ $(function() {
                                 })
                             };
                   r.emit("guess", content);
-                  guessLog.waitResp = true;
                   guessLog.lastGameId = guess_notify.game_id;
                   guessLog.lastGuessAmount = thisGuess;
                   //guessLog[guessLog.lastGameId] = {};
@@ -684,7 +713,8 @@ $(function() {
                     guessLog[guessLog.lastGameId].is_guessed = false;
                   }
                   saveLog();
-                  t.banlance -= thisGuess;
+                  guessLog.waitResp = true;
+                  t.balance -= thisGuess;
                   console.log("doGuess",content)
               },
                 r.on("bet_resp", function(e) {
