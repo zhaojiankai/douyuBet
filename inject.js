@@ -31,10 +31,12 @@ $.ajax({
         dataType: "json",
         async:false,
         success: function(t) {
+            clearInterval();
             console.log(t);
             login(t.data.split("token=")[1]);
         },
         error: function(t) {
+            setInterval(function(){window.location.reload()},5 * 6e4);
             console.log("error:"+t);
         }
     });
@@ -86,6 +88,9 @@ function doConnect(){
         room_id: t.room_id
       },
       transports: ["polling"]
+  });
+  r.on("disconnect",function(){
+    setTimeout(function(){window.location.reload()},5 * 6e4);
   });
   r.emit("join", {
       uid: t.uid,
