@@ -3,7 +3,6 @@
   if(localStorage.betSetting == undefined){
     localStorage.betSetting = JSON.stringify({
       roomid:74960,
-      tokenUrl:"",
       minOdds:5,
       oppoMaxOdds:1,
       robustMinOdds:0.5,
@@ -24,7 +23,8 @@ var betSetting = JSON.parse(localStorage.betSetting);
 var saveLog = function(){
   localStorage.guessLog = JSON.stringify(guessLog);
 }
-
+var a;
+var userInfo;
 $.ajax({
         type: "GET",
         url: "https://www.douyu.com/member/guess/get_token?roomid="+betSetting.roomid,
@@ -32,8 +32,7 @@ $.ajax({
         async:false,
         success: function(t) {
             console.log(t);
-            betSetting.tokenUrl = t.data;
-            login(t.data);
+            login(t.data.split("token=")[1]);
         },
         error: function(t) {
             console.log("error:"+t);
@@ -42,11 +41,13 @@ $.ajax({
 function login(token){
     $.ajax({
       type: "GET",
-      url: "https://js8888888888.com/user/login?" + $.param(token),
+      url: "https://huojianjingcai.com/user/login?token=" + token,
       dataType: "json",
       success: function(t) {
         console.log("login",t);
-        doConnect(t.data);
+        userInfo = t.data;
+        get_games();
+        a = setInterval(get_games,6e4);
       },
       error: function(t) {
         console.log("login error!");
@@ -54,14 +55,37 @@ function login(token){
     })
   };
 
+function get_games(){
+  $.ajax({
+    type: "GET",
+    url: "https://huojianjingcai.com/game/get_room_games?room=" + userInfo.room_id,
+    dataType: "json",
+    success: function(i) {
+      if (0 != userInfo.balance && 0 != i.data.length) {
+        clearInterval(a);
+        doConnect();
+      }
+    },
+    error: function(t) {
+      console.log("get games error!");
+    }
+  });
+};
+
 var c = function(){};
 var n = function(){};
 var d = function(){};
 
 var s = "";
-function doConnect(t){
-  var r = io.connect("https://js8888888888.com", {
-      rejectUnauthorized: !1
+function doConnect(){
+  var t = userInfo;
+  var r = io.connect("https://huojianjingcai.com", {
+      rejectUnauthorized: !1,
+      query: {
+        uid: t.uid,
+        room_id: t.room_id
+      },
+      transports: ["polling"]
   });
   r.emit("join", {
       uid: t.uid,
@@ -90,7 +114,7 @@ function doConnect(t){
   }),
   lastData = undefined;
   print = function(e,type){
-    //return;
+    return;
     console.count();
     for(var i in e[type]){
       var notify = e[type][i];
@@ -217,12 +241,3 @@ saveLog();
       isNaN(t.balance) || $("#balance").text(t.balance > 1e4 ? (t.balance / 1e4).toFixed(2) + "万" : t.balance + "个"))
   })
 }
-//override getUrlParam in common.js
-getUrlParam = function(e) {
-  if(e == "tick"){//seems no use when "tick"
-    return ""
-  }
-    var t = new RegExp("(^|&)" + e + "=([^&]*)(&|$)")
-      , n = betSetting.tokenUrl.split('?')[1].match(t);
-    return n ? decodeURIComponent(n[2]) : ""
-};
